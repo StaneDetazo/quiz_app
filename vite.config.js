@@ -8,4 +8,24 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // permettre les requêtes du backend
+  server: {
+    proxy: {
+      '/auth': {
+        target: 'http://localhost:8090', // URL du backend
+        changeOrigin: true,
+        secure: false,
+      },
+      '/question': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/quiz': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })

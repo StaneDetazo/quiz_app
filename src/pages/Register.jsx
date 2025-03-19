@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import registerSchema from "../validations/registerValidation";
+import { signup } from "../api";
 
 const Register = () => {
   const {
@@ -12,18 +13,17 @@ const Register = () => {
   } = useForm({
     resolver: yupResolver(registerSchema),
   });
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("joueur"); // Valeur par défaut
+
   const navigate = useNavigate();
 
-  const onSubmit = (e) => {
-    // e.preventDefault();
-    console.log("Inscription :", { email, password, role });
-    navigate("/login"); // Redirection après inscription (temporaire)
-  };
+  const onSubmit = async (data) => {
+    try {
+      await signup(data)
+      navigate("/login")
+    } catch (error) {
+      console.error("error de création de compte", error)
+    }
+  }
 
   return (
     <div className="login-container">
@@ -33,65 +33,27 @@ const Register = () => {
             <h1 className="text-5xl font-bold">
               Inscrivez-vous dès maintenant!
             </h1>
-            <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
-            </p>
           </div>
 
           <div className="card bg-white shadow-lg rounded-lg p-4 w-full max-w-sm shrink-0 shadow-2xl">
             <div className="card-body">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <fieldset className="fieldset">
-                  <label className="fieldset-label" htmlFor="name">
-                    Nom
+                  {/* champ de username */}
+                  <label className="fieldset-label" htmlFor="username">
+                    Username
                   </label>
                   <input
-                    {...register("name")}
-                    id="name"
+                    {...register("username")}
+                    id="username"
                     className="input focus:outline-none focus:border-blue-500"
                     type="text"
-                    placeholder="Votre nom"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Votre username"
                   />
-                  {errors.name && (
-                    <p className="text-red-500">{errors.name.message}</p>
+                  {errors.username && (
+                    <p className="text-red-500">{errors.username.message}</p>
                   )}
-
-                  <label className="fieldset-label" htmlFor="firstname">
-                    Prenom
-                  </label>
-                  <input
-                    {...register("firstname")}
-                    id="firstname"
-                    className="input focus:outline-none focus:border-blue-500"
-                    type="text"
-                    placeholder="Votre prenom"
-                    value={firstname}
-                    onChange={(e) => setFirstname(e.target.value)}
-                  />
-                  {errors.firstname && (
-                    <p className="text-red-500">{errors.firstname.message}</p>
-                  )}
-
-                  <label className="fieldset-label" htmlFor="email">
-                    Email
-                  </label>
-                  <input
-                    {...register("email")}
-                    id="email"
-                    className="input focus:outline-none focus:border-blue-500"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500">{errors.email.message}</p>
-                  )}
-
+                  {/* champs de mot de passe */}
                   <label className="fieldset-label" htmlFor="password">
                     Mot de passe
                   </label>
@@ -101,24 +63,37 @@ const Register = () => {
                     className="input focus:outline-none focus:border-blue-500"
                     type="password"
                     placeholder="Mot de passe"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                   />
                   {errors.password && (
                     <p className="text-red-500">{errors.password.message}</p>
                   )}
 
-                  <label className="fieldset-label" htmlFor="password">
-                    Rôle
-                  </label>
-                  <select
+                  {/* champs de score */}
+                  <input
+                    {...register("score")}
+                    id="score"
                     className="input focus:outline-none focus:border-blue-500"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <option value="joueur">Joueur</option>
-                    <option value="admin">Créateur de quiz</option>
-                  </select>
+                    type="hidden"
+                    placeholder="Votre score"
+                    value="0"
+                  />
+                  {errors.score && (
+                    <p className="text-red-500">{errors.score.message}</p>
+                  )}
+                  
+                  {/* champs de role */}
+                  <input
+                    {...register("role")}
+                    id="role"
+                    className="input focus:outline-none focus:border-blue-500"
+                    type="hidden"
+                    placeholder="Votre score"
+                    value="1"
+                  />
+                  {errors.role && (
+                    <p className="text-red-500">{errors.role.message}</p>
+                  )}
+
                   <div>
                     <a className="link link-hover" href="/login">
                       Vous avez déjà un compte ?

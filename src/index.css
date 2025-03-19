@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
-@import url('https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 * {
     font-family: "Afacad Flux";
@@ -8,8 +8,8 @@
     font-style: normal;
 }
 
-.login-container > .hero {
-    background-image: url("/public/carro.jpg");
+.login-container > .hero, .home-page {
+    background-image: url("/carro.jpg");
     background-repeat: no-repeat;
     object-fit: cover;
 }

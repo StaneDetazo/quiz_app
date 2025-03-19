@@ -1,9 +1,9 @@
 import * as Yup from "yup";
 
 const registerSchema = Yup.object().shape({
-    name: Yup.string().required("Le nom est requis."),
-    firstname: Yup.string().required("Le prenom est requis"),
-    email: Yup.string().required("L'email est requis.").email("Email invalide"),
+    username: Yup.string().required("Le username est requis."),
+    score: Yup.number().required("Le score est requis."),
+    role: Yup.number().required("Le role est requis."),
     password: Yup.string().required("Le mot de passe est requis.").min(6, "minimum six caractères."),
 })
 
