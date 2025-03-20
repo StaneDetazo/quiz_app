@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { addQuestion, updateQuestion, getQuestionById } from "../api";
 import SideBar from "../components/SideBar";
 import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
 const QuestionForm = () => {
   const { token, role_id } = useAuth(); // Récupérer les infos d'authentification
@@ -78,6 +79,7 @@ const QuestionForm = () => {
     <div className="flex">
       <SideBar />
       <div className="container mx-auto p-4">
+      <Navbar />
         <h1 className="text-2xl font-bold mb-4">{id ? "Modifier" : "Ajouter"} une Question</h1>
         <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded">
           <div className="mb-4">
@@ -179,7 +181,7 @@ const QuestionForm = () => {
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
             {id ? "Modifier" : "Ajouter"}
           </button>
-          <a href="/questions" className="bg-gray-700 text-white px-4 py-2 mx-3 rounded">
+          <a href="/adminquestion" className="bg-gray-700 text-white px-4 py-2 mx-3 rounded">
             Annuler
           </a>
         </form>

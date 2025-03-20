@@ -11,6 +11,7 @@ import QuizPlay from "./pages/QuizPlay";
 import QuizResults from "./pages/QuizResults";
 import ProtectedPage from "./protectedPage/ProtectedPage";
 import { AuthProvider } from "./context/AuthContext";
+import ClassementPlayer from "./pages/ClassementPlayer";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/playerquizpage" element={<QuizPage />} />
             <Route path="/playerquizplay/:id" element={<QuizPlay />} />
             <Route path="/playerquizresults" element={<QuizResults />} />
+            <Route path="/playerclassementresult" element={<ClassementPlayer />} />
 
             {/* Pour les administrateurs, pour gérer les quiz et les questions */}
             {/* quiz */}

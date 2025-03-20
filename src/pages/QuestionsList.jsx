@@ -7,9 +7,10 @@ import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
+import Login from "./Login";
 
 const QuestionsList = () => {
-  const { token } = useAuth()
+  const { token, role_id } = useAuth()
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,6 +69,7 @@ const QuestionsList = () => {
   const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
 
   return (
+    role_id == "2" ?
     <div className="flex">
       <SideBar />
       <div className="container mx-auto p-4">
@@ -85,8 +87,8 @@ const QuestionsList = () => {
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="">Toutes les catégories</option>
-            <option value="Math">Math</option>
-            <option value="Science">Science</option>
+            <option value="Football">Football</option>
+            <option value="Clubs">Clubs</option>
             <option value="Histoire">Histoire</option>
           </select>
 
@@ -171,7 +173,7 @@ const QuestionsList = () => {
           </button>
         </div>
       </div>
-    </div>
+    </div> : <Login/>
   );
 };
 

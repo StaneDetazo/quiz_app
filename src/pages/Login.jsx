@@ -16,13 +16,13 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            const { token, role_id, username } = await login(data);
-            
+            const { token, role_id, username, user_id } = await login(data);
+
             // console.log(token, role_id, username);
-            
-            if (token && role_id && username) {
-                loginContext(token, role_id, username); // Stocker le token dans le contexte
-                role_id == 2 ? navigate("/adminquestion") : navigate("/playerquizplay") 
+
+            if (token && role_id && username && user_id) {
+                loginContext(token, role_id, username, user_id); // Stocker le token dans le contexte
+                role_id == 2 ? navigate("/adminquestion") : navigate("/playerquizpage")
             }
         } catch (error) {
             setError("Le mot de passe ou l'username est incorrect");
@@ -49,7 +49,15 @@ const Login = () => {
                                     <label htmlFor="password">Mot de passe</label>
                                     <input {...register("password")} id="password" className="input" type="password" placeholder="Mot de passe" />
                                     {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-
+                                    <div>
+                                        <a className="link link-hover" href="/register">
+                                            Vous n'avez pas encore de compte ?
+                                            <span className="text-blue-500 hover:text-blue-600">
+                                                {" "}
+                                                S'inscrire
+                                            </span>
+                                        </a>
+                                    </div>
                                     <button type="submit" className="btn bg-blue-500 hover:bg-blue-600 text-white mt-4">Se connecter</button>
                                 </fieldset>
                             </form>

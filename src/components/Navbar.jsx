@@ -7,22 +7,19 @@ const Navbar = () => {
 
   return (
     <div className="navbar bg-base-200 shadow-md mb-3">
-
-
-      {/* Affichage conditionnel si role_id == 2 */}
-      {role_id === "1" && (
-        <div> {/* Élément parent englobant obligatoire */}
+    
+    
+    {/* Affichage conditionnel si role_id == 2 */}
+      {role_id == "1" && (
+        <div className='navbar'> {/* Élément parent englobant obligatoire */}
           <div className="flex-1">
-            <Link to="/admin" className="btn btn-primary">Espace Admin</Link>
+            <Link to="/playerquizpage" className="btn btn-ghost text-xl">Accueil</Link>
           </div>
           <div className="flex-1">
-            <Link to="/quizpage" className="btn btn-ghost text-xl">Accueil</Link>
+            <Link to="/playerquizresults" className="btn btn-ghost text-xl">Résultat et amélioration</Link>
           </div>
           <div className="flex-1">
-            <Link to="/quizresults" className="btn btn-ghost text-xl">Résultat et amélioration</Link>
-          </div>
-          <div className="flex-1">
-            <a className="btn btn-ghost text-xl">Classement</a>
+            <Link to="/playerclassementresult" className="btn btn-ghost text-xl">Classement</Link>
           </div>
         </div>
       )}

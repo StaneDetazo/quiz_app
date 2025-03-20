@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { addQuiz, updateQuiz, getQuizById, getQuestions } from "../api";
 import SideBar from "../components/SideBar";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
 const QuizForm = () => {
+  const { token, role_id } = useAuth(); // Récupérer les infos d'authentification
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -23,24 +26,30 @@ const QuizForm = () => {
 
   useEffect(() => {
     fetchQuestions(); // Charger toutes les questions disponibles
-    if (id) {
-      fetchQuiz(id);
+    if (!token) {
+      // Si pas de token, rediriger vers la page de connexion
+      navigate("/login");
+    } else if (role_id !== "2") {  // Vérifier le rôle
+      // Si le rôle n'est pas "2", rediriger vers une autre page (ou afficher un message d'erreur)
+      navigate("/login");
+    } else if (id) {
+      fetchQuiz(id); // Si on est dans un mode édition, récupérer la question
     }
-  }, [id]);
+  }, [token, role_id, id, navigate]);
 
   // Charger les détails d'un quiz pour modification
   const fetchQuiz = async (id) => {
     try {
-      const data = await getQuizById(id);
+      const data = await getQuizById(id, token);
+      const datas = data.data
+      console.log();
 
       setQuizData({
-        categorie: data.categorie || "",
-        niveau: data.niveau || "",
-        questions: Array.isArray(data.questions) ? data.questions.map(q => q.q_id) : [],
-        score: data.score || 0,
+        categorie: datas.categorie || "",
+        niveau: datas.niveau || "",
+        questions: Array.isArray(datas.questions) ? datas.questions.map(q => q.q_id) : [],
+        score: datas.score || 0,
       });
-
-      console.log("État après setQuizData :", quizData); // Vérifie si l'état change
 
     } catch (error) {
       console.error("Erreur lors du chargement du quiz :", error);
@@ -51,7 +60,7 @@ const QuizForm = () => {
   // Charger toutes les questions disponibles et extraire les catégories et niveaux uniques
   const fetchQuestions = async () => {
     try {
-      const data = await getQuestions();
+      const data = await getQuestions(token);
       setAllQuestions(data);
 
       // Extraire les catégories et niveaux uniques
@@ -73,7 +82,7 @@ const QuizForm = () => {
       );
       setFilteredQuestions(filtered);
     } else {
-      setFilteredQuestions([]); 
+      setFilteredQuestions([]);
     }
   }, [quizData.categorie, quizData.niveau, allQuestions]);
 
@@ -100,11 +109,11 @@ const QuizForm = () => {
     e.preventDefault();
     try {
       if (id) {
-        await updateQuiz(id, quizData);
+        await updateQuiz(id, quizData, token);
       } else {
-        await addQuiz(quizData);
+        await addQuiz(quizData, token);
       }
-      navigate("/quizzes");
+      navigate("/adminquizzes");
     } catch (error) {
       console.error("Erreur lors de l'enregistrement", error);
     }
@@ -112,91 +121,93 @@ const QuizForm = () => {
 
   return (
     <div className="flex">
-      <SideBar/>
+      <SideBar />
       <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{id ? "Modifier" : "Ajouter"} un Quiz</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded">
-        {/* Catégorie */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Catégorie</label>
-          <select
-            name="categorie"
-            value={quizData.categorie}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Sélectionner une catégorie</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Navbar />
 
-        {/* Niveau */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Niveau</label>
-          <select
-            name="niveau"
-            value={quizData.niveau}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Sélectionner un niveau</option>
-            {niveaux.map((niv) => (
-              <option key={niv} value={niv}>
-                {niv}
-              </option>
-            ))}
-          </select>
-        </div>
+        <h1 className="text-2xl font-bold mb-4">{id ? "Modifier" : "Ajouter"} un Quiz</h1>
+        <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded">
+          {/* Catégorie */}
+          <div className="mb-4">
+            <label className="block text-gray-700">Catégorie</label>
+            <select
+              name="categorie"
+              value={quizData.categorie}
+              onChange={handleChange}
+              required
+              className="w-full border p-2 rounded"
+            >
+              <option value="">Sélectionner une catégorie</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Sélection des Questions */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Sélectionner les Questions</label>
-          <select
-            multiple
-            name="questions"
-            value={quizData.questions}
-            onChange={handleQuestionChange}
-            required
-            className="w-full border p-2 rounded"
-          >
-            {filteredQuestions.map((question) => (
-              <option key={question.q_id} value={question.q_id}>
-                {question.q_id + " - " + question.question}
-              </option>
-            ))}
-          </select>
-        </div>
+          {/* Niveau */}
+          <div className="mb-4">
+            <label className="block text-gray-700">Niveau</label>
+            <select
+              name="niveau"
+              value={quizData.niveau}
+              onChange={handleChange}
+              required
+              className="w-full border p-2 rounded"
+            >
+              <option value="">Sélectionner un niveau</option>
+              {niveaux.map((niv) => (
+                <option key={niv} value={niv}>
+                  {niv}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Score total du quiz */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Score</label>
-          <input
-            type="number"
-            name="score"
-            value={quizData.score}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded"
-          />
-        </div>
+          {/* Sélection des Questions */}
+          <div className="mb-4">
+            <label className="block text-gray-700">Sélectionner les Questions</label>
+            <select
+              multiple
+              name="questions"
+              value={quizData.questions}
+              onChange={handleQuestionChange}
+              required
+              className="w-full border p-2 rounded"
+            >
+              {filteredQuestions.map((question) => (
+                <option key={question.q_id} value={question.q_id}>
+                  {question.q_id + " - " + question.question}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Bouton Submit */}
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          {id ? "Modifier" : "Ajouter"}
-        </button> 
-        <a type="button" href="/quizzes" className="bg-gray-700 text-white px-4 py-2 mx-3 rounded">
-          Annuler
-        </a>
-      </form>
+          {/* Score total du quiz */}
+          <div className="mb-4">
+            <label className="block text-gray-700">Score</label>
+            <input
+              type="number"
+              name="score"
+              value={quizData.score}
+              onChange={handleChange}
+              required
+              className="w-full border p-2 rounded"
+            />
+          </div>
+
+          {/* Bouton Submit */}
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+            {id ? "Modifier" : "Ajouter"}
+          </button>
+          <a type="button" href="/quizzes" className="bg-gray-700 text-white px-4 py-2 mx-3 rounded">
+            Annuler
+          </a>
+        </form>
+      </div>
     </div>
-    </div>
-    
+
   );
 };
 
