@@ -5,25 +5,28 @@ import { useEffect, useState } from "react";
 import { getQuestions, deleteQuestion } from "../api";
 import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
+import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 
 const QuestionsList = () => {
+  const { token } = useAuth()
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const questionsPerPage = 15;
-  const [assToken, setAccessToken] = useState("");
 
   useEffect(() => {
-    setAccessToken(localStorage.getItem('token'))
-    fetchQuestions();
-  }, []);
+    if (token) {
+      fetchQuestions();
+    }
+  }, [token]);
 
   const fetchQuestions = async () => {
     try {
-      assToken
-      const data = await getQuestions();
+      // 
+      const data = await getQuestions(token);
       setQuestions(data);
       setFilteredQuestions(data); // Initialiser avec toutes les questions
     } catch (error) {
@@ -34,7 +37,7 @@ const QuestionsList = () => {
   const handleDelete = async (id) => {
     if (confirm("Voulez-vous vraiment supprimer cette question ?")) {
       try {
-        await deleteQuestion(id);
+        await deleteQuestion(id, token);
         fetchQuestions(); // Recharger la liste après suppression
       } catch (error) {
         console.error("Erreur lors de la suppression", error);
@@ -68,9 +71,10 @@ const QuestionsList = () => {
     <div className="flex">
       <SideBar />
       <div className="container mx-auto p-4">
+        <Navbar />
         <h1 className="text-2xl font-bold mb-4">Liste des Questions</h1>
         <div className="mb-4 flex gap-4">
-          <Link to="/questions/add" className="bg-blue-500 text-white px-4 py-2 rounded">
+          <Link to="/adminquestion/add" className="bg-blue-500 text-white px-4 py-2 rounded">
             + Ajouter une question
           </Link>
 
@@ -126,7 +130,7 @@ const QuestionsList = () => {
                   <td className="py-2 px-4">{q.niveau}</td>
                   <td className="py-2 px-4">{q.categorie}</td>
                   <td className="py-2 px-4">
-                    <Link to={`/questions/${q.q_id}`} className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">
+                    <Link to={`/adminquestion/${q.q_id}`} className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">
                       Modifier
                     </Link>
                     <button

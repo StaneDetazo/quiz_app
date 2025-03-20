@@ -1,12 +1,11 @@
-/**
- * PAGE POUR CREER UNE QUESTION
- */
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { addQuestion, updateQuestion, getQuestionById } from "../api";
 import SideBar from "../components/SideBar";
+import { useAuth } from "../context/AuthContext";
 
 const QuestionForm = () => {
+  const { token, role_id } = useAuth(); // Récupérer les infos d'authentification
   const navigate = useNavigate();
   const { id } = useParams(); // Récupérer l'ID si modification
 
@@ -21,14 +20,20 @@ const QuestionForm = () => {
   });
 
   useEffect(() => {
-    if (id) {
-      fetchQuestion(id);
+    if (!token) {
+      // Si pas de token, rediriger vers la page de connexion
+      navigate("/login");
+    } else if (role_id !== "2") {  // Vérifier le rôle
+      // Si le rôle n'est pas "2", rediriger vers une autre page (ou afficher un message d'erreur)
+      navigate("/login");
+    } else if (id) {
+      fetchQuestion(id); // Si on est dans un mode édition, récupérer la question
     }
-  }, [id]);
+  }, [token, role_id, id, navigate]); // Dépendances pour la redirection conditionnelle
 
   const fetchQuestion = async (id) => {
     try {
-      const data = await getQuestionById(id);      
+      const data = await getQuestionById(id, token);      
       setQuestionData(data);
     } catch (error) {
       console.error("Erreur lors du chargement de la question", error);
@@ -39,19 +44,16 @@ const QuestionForm = () => {
     setQuestionData({ ...questionData, [e.target.name]: e.target.value });
   };
 
-  // Ajouter une nouvelle proposition
   const handleAddProposition = () => {
     setQuestionData({ ...questionData, autres: [...questionData.autres, ""] });
   };
 
-  // Modifier une proposition existante
   const handleChangeProposition = (index, value) => {
     const newAutres = [...questionData.autres];
     newAutres[index] = value;
     setQuestionData({ ...questionData, autres: newAutres });
   };
 
-  // Supprimer une proposition
   const handleRemoveProposition = (index) => {
     const newAutres = [...questionData.autres];
     newAutres.splice(index, 1);
@@ -62,11 +64,11 @@ const QuestionForm = () => {
     e.preventDefault();
     try {
       if (id) {
-        await updateQuestion(id, questionData);
+        await updateQuestion(id, questionData, token);
       } else {
-        await addQuestion(questionData);
+        await addQuestion(questionData, token);
       }
-      navigate("/questions"); // Redirige après l'ajout/modif
+      navigate("/adminquestion"); // Redirige après l'ajout/modification
     } catch (error) {
       console.error("Erreur lors de l'enregistrement", error);
     }

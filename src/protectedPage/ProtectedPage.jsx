@@ -1,18 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedPage = () => {
-    const navigate = useNavigate();
+    const token = localStorage.getItem("token"); // Vérifie si l'utilisateur est connecté
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            navigate("/login");
-            return;
-        }
-        
-    }, [navigate]);
+    return token ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedPage;

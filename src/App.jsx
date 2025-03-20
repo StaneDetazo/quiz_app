@@ -9,32 +9,41 @@ import QuestionForm from "./pages/QuestionForm";
 import QuizForm from "./pages/QuizForm";
 import QuizPlay from "./pages/QuizPlay";
 import QuizResults from "./pages/QuizResults";
+import ProtectedPage from "./protectedPage/ProtectedPage";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-        {/* Pour le joueur une fois connecté */}
-        <Route path="/quizpage" element={<QuizPage />} />
-        <Route path="/quizplay/:id" element={<QuizPlay />} />
-        <Route path="/quizresults" element={<QuizResults />} />
+          <Route element={<ProtectedPage />}>
 
-        {/* Pour les administrateurs, pour gérer les quiz et les questions */}
-        {/* quiz */}
-        <Route path="/quizzes" element={<QuizList />} />
-        <Route path="/quizzes/add" element={<QuizForm />} />
-        <Route path="/quizzes/:id" element={<QuizForm />} />
-        {/* question */}
-        <Route path="/questions" element={<QuestionsList />} />
-        <Route path="/questions/add" element={<QuestionForm />} />
-        <Route path="/questions/:id" element={<QuestionForm />} />
-      
-        {/* <Route path="*" element={<NotFound />} /> */}
-      </Routes>
+            <Route path="/playerquizpage" element={<QuizPage />} />
+            <Route path="/playerquizplay/:id" element={<QuizPlay />} />
+            <Route path="/playerquizresults" element={<QuizResults />} />
+
+            {/* Pour les administrateurs, pour gérer les quiz et les questions */}
+            {/* quiz */}
+            <Route path="/adminquizzes" element={<QuizList />} />
+            <Route path="/adminquizzes/add" element={<QuizForm />} />
+            <Route path="/adminquizzes/:id" element={<QuizForm />} />
+
+            {/* question */}
+            <Route path="/adminquestion" element={<QuestionsList />} />
+            <Route path="/adminquestion/add" element={<QuestionForm />} />
+            <Route path="/adminquestion/:id" element={<QuestionForm />} />
+          </Route>
+
+
+          {/* <Route path="*" element={<NotFound />} /> */}
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }

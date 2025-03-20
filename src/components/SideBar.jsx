@@ -24,7 +24,7 @@ const SideBar = () => {
                     <ul className="mt-10">
                         <li className="border-b-1">
                             <a
-                                href="/quizzes"
+                                href="/adminquizzes"
                                 className="block py-2 px-4 hover:bg-gray-700 rounded-md"
                             >
                                 Gérer les quiz
@@ -32,7 +32,7 @@ const SideBar = () => {
                         </li>
                         <li className="border-b-1">
                             <a
-                                href="/questions"
+                                href="/adminquestion"
                                 className="block py-2 px-4 hover:bg-gray-700 rounded-md"
                             >
                                 Gérer les questions
